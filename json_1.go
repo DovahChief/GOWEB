@@ -26,11 +26,11 @@ type user struct {
 	Nombre   string `json:"first"`
 	Apellido string `json:"last"`
 }
-type CreateResponse struct {
+type createResponse struct {
 	Error     string `json:"error"`
 	ErrorCode int    `json:"code"`
 }
-type ErrMsg struct {
+type errMsg struct {
 	ErrCode    int
 	StatusCode int
 	Msg        string
@@ -80,8 +80,8 @@ func dbErrorParse(err string) (string, int64) {
 }
 
 //error de mensaje
-func ErrorMessages(err int64) ErrMsg {
-	em := ErrMsg{}
+func errorMessages(err int64) errMsg {
+	em := errMsg{}
 	errorMessage := ""
 	statusCode := 200
 	errorCode := 0
@@ -125,12 +125,11 @@ func creaUsr(w http.ResponseWriter, r *http.Request) {
 	q, err := database.Exec(sqlq)
 
 	if err != nil {
-		Response := CreateResponse{}
+		Response := createResponse{}
 		errorMessage, errorCode := dbErrorParse(err.Error())
 
-		//error, httpCode, msg := ErrorMessages(errorCode)
-		mserr := ErrorMessages(errorCode)
-
+		//error, httpCode, msg := errorMessages(errorCode)
+		mserr := errorMessages(errorCode)
 		Response.Error = mserr.Msg
 		Response.ErrorCode = mserr.ErrCode
 
