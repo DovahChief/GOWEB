@@ -54,6 +54,7 @@ func main() {
 	ruta.HandleFunc("/api/cambia/{user:[0-9]+}", borraUsr).Methods("POST")
 	ruta.HandleFunc("/api", index)
 	ruta.HandleFunc("/api/form", form)
+	ruta.HandleFunc("/api/creado", form)
 
 	http.Handle("/", ruta)
 	http.ListenAndServe(":8080", nil)
@@ -68,6 +69,10 @@ func index(w http.ResponseWriter, r *http.Request) {
 //funcion de pagina
 func form(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "pagina/ccuenta.html")
+}
+
+func creado(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "pagina/creado.html")
 }
 
 //funcion maneja error de bd
