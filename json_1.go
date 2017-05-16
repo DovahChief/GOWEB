@@ -153,7 +153,7 @@ func obtenUsr(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	fmt.Println(r)
-	filas, _ := database.Query("select * from users LIMIT 10")
+	filas, _ := database.Query("select * from users")
 	Respuesta := users{}
 
 	for filas.Next() {
@@ -165,7 +165,12 @@ func obtenUsr(w http.ResponseWriter, r *http.Request) {
 		Respuesta.Users = append(Respuesta.Users, usuario)
 	}
 	sal, _ := json.Marshal(Respuesta)
+
+	fmt.Fprintf(w, " <script type=\"text/javascript\"> ")
+	fmt.Fprintf(w, " RESP_OBJ =  ") //nombre del objeto de javascript en el html
 	fmt.Fprintf(w, string(sal))
+	fmt.Fprintf(w, "</script>")
+	http.ServeFile(w, r, "pagina/usuarios.html")
 }
 
 func borraUsr(w http.ResponseWriter, r *http.Request) {
@@ -187,7 +192,6 @@ func borraUsr(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateUsr(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	NuevoUsuario := user{}
 	NuevoUsuario.Nombre = r.FormValue("first")
@@ -214,73 +218,6 @@ func updateUsr(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Algo salio mal al momento de actualizar")
 		fmt.Println(err)
-func obtenUsr(w http.ResponseWriter, r *http.Request) {
-	//saca y muestra un maximo de 10 usuarios de la bd
-	w.Header().Set("Pragma", "no-cache")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	fmt.Println(r)
-	filas, _ := database.Query("select * from users LIMIT 10")
-	Respuesta := users{}
-
-	for filas.Next() {
-		usuario := user{}
-
-		filas.Scan(&usuario.ID, &usuario.NomUsr, &usuario.Nombre,
-			&usuario.Apellido, &usuario.Email)
-
-		Respuesta.Users = append(Respuesta.Users, usuario)
-	}
-	sal, _ := json.Marshal(Respuesta)
-	fmt.Fprintf(w, string(sal))
-}
-
-func borraUsr(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	urlParams := mux.Vars(r)
-	id := urlParams["user"]
-	sqlq := "DELETE FROM users WHERE user_id = " + id + ";"
-	fmt.Println(sqlq)
-	q, err := database.Exec(sqlq)
-
-	if err != nil {
-		fmt.Println("ALgo salio mal")
-		fmt.Println(err)
-	}
-
-	fmt.Println(q)
-
-	fmt.Println("Usuario " + id + " eliminado")
-}
-
-func updateUsr(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	NuevoUsuario := user{}
-	NuevoUsuario.Nombre = r.FormValue("first")
-	NuevoUsuario.Email = r.FormValue("email")
-	NuevoUsuario.Apellido = r.FormValue("last")
-	NuevoUsuario.NomUsr = r.FormValue("user")
-
-	urlParams := mux.Vars(r)
-	id := urlParams["user"]
-
-	sal, err := json.Marshal(NuevoUsuario)
-	fmt.Println(string(sal))
-
-	if err != nil {
-		fmt.Println("Algo salio mal en update")
-	}
-
-	sqlq := "UPDATE users SET user_nickname= '" + NuevoUsuario.NomUsr +
-		"', user_first= '" + NuevoUsuario.Nombre + "', user_last = '" +
-		NuevoUsuario.Apellido + "', user_email ='" + NuevoUsuario.Email + "'" +
-		"WHERE user_id = " + id + " ;"
-
-	q, err := database.Exec(sqlq)
-	if err != nil {
-		fmt.Println("Algo salio mal al momento de actualizar")
-		fmt.Println(err) 
 	}
 	fmt.Println(q)
 }
